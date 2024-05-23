@@ -30,16 +30,49 @@ class Workout {
 }
 
 class Running extends Workout {
+  type = "Running";
+
   constructor(coords, distance, duration, cadence) {
     super(coords, distance, duration); // from WORKOUT class
     this.cadence = cadence; // in steps/min
+    this.calcPace(); // min/km
+    this.setDescription();
+  }
+
+  //Methods
+  calcPace() {
+    // min/km
+    this.pace = this.duration / this.distance;
+    this.pace = this.pace.toFixed(2); //add to improve look of numbers
+    return this.pace;
+  }
+
+  setDescription() {
+    // Running on _____date_____
+    this.description = `${this.type} on ${this.date.toDateString()}`;
   }
 }
 
 class Cycling extends Workout {
+  type = "Cycling";
   constructor(coords, distance, duration, elevationGain) {
     super(coords, distance, duration); // from WORKOUT class
-    this.elevationGain = elevationGain; // in meters
+    this.elevation = elevationGain; // in meters
+    this.calcSpeed(); // min/km
+    this.setDescription();
+  }
+
+  //Methods
+  calcSpeed() {
+    // km/h
+    this.speed = this.distance / (this.duration / 60);
+    this.speed = this.speed.toFixed(2); //add to improve look of numbers
+    return this.speed;
+  }
+
+  setDescription() {
+    // Cycling on _____date_____
+    this.description = `${this.type} on ${this.date.toDateString()}`;
   }
 }
 // end of classes
@@ -108,6 +141,59 @@ form.addEventListener("submit", function (e) {
   workouts.push(workout);
   //task 4.4 testing the workouts array
   console.log(workouts);
+  let html;
+  //Render Each workout to the Sidebar
+  if (type === "running") {
+    html = `<li class="workout workout--running" data-id=${workout.id}>
+                      <h2 class="workout__title">${workout.description}</h2>
+                      <div class="workout__details">
+                        <span class="workout__icon">🏃‍♂️</span>
+                        <span class="workout__value">${workout.distance}</span>
+                        <span class="workout__unit">km</span>
+                      </div>
+                      <div class="workout__details">
+                        <span class="workout__icon">⏱</span>
+                        <span class="workout__value">${workout.duration}</span>
+                        <span class="workout__unit">min</span>
+                      </div>
+                      <div class="workout__details">
+                        <span class="workout__icon">⚡️</span>
+                        <span class="workout__value">${workout.pace}</span>
+                        <span class="workout__unit">min/km</span>
+                      </div>
+                      <div class="workout__details">
+                        <span class="workout__icon">🦶🏼</span>
+                        <span class="workout__value">${workout.cadence}</span>
+                        <span class="workout__unit">spm</span>
+                      </div>
+                      </li>`;
+  }
+  if (type === "cycling") {
+    html = `<li class="workout workout--cycling" data-id="1234567891${workout.id}">
+            <h2 class="workout__title">${workout.description}</h2>
+            <div class="workout__details">
+              <span class="workout__icon">🚴‍♀️</span>
+              <span class="workout__value">${workout.distance}</span>
+              <span class="workout__unit">km</span>
+            </div>
+            <div class="workout__details">
+              <span class="workout__icon">⏱</span>
+              <span class="workout__value">${workout.duration}</span>
+              <span class="workout__unit">min</span>
+            </div>
+            <div class="workout__details">
+              <span class="workout__icon">⚡️</span>
+              <span class="workout__value">${workout.speed}</span>
+              <span class="workout__unit">km/h</span>
+            </div>
+            <div class="workout__details">
+              <span class="workout__icon">⛰</span>
+              <span class="workout__value">${workout.elevation}</span>
+              <span class="workout__unit">m</span>
+            </div>
+          </li> `;
+  }
+  containerWorkouts.insertAdjacentHTML("beforeend", html);
 
   //Display marker on map
   L.marker([lat, lng])
